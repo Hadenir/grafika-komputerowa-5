@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "display/display.hpp"
+#include "render/shader.hpp"
 
 void processInput(GLFWwindow* window)
 {
@@ -23,62 +24,18 @@ std::string read_shader(const std::string& path)
     return ss.str();
 }
 
-GLuint create_shader(const std::string& shader_source, GLenum shader_type)
-{
-    const char* vertex_source_str = shader_source.c_str();
-    GLuint shader = glCreateShader(shader_type);
-    glShaderSource(shader, 1, &vertex_source_str, nullptr);
-    glCompileShader(shader);
-
-    GLint success;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if(!success)
-    {
-        char info[512];
-        glGetShaderInfoLog(shader, sizeof(info), nullptr, info);
-        std::stringstream ss;
-        ss << "Failed to compile shader: " << info << "!";
-        throw std::runtime_error(ss.str());
-    }
-
-    return shader;
-}
-
-GLuint create_shader_program(GLuint vertex_shader, GLuint fragment_shader)
-{
-    GLuint shader_program = glCreateProgram();
-    glAttachShader(shader_program, vertex_shader);
-    glAttachShader(shader_program, fragment_shader);
-    glLinkProgram(shader_program);
-
-    GLint success;
-    glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-    if(!success)
-    {
-        char info[512];
-        glGetProgramInfoLog(shader_program, sizeof(info), nullptr, info);
-        std::stringstream ss;
-        ss << "Failed to link shader program: " << info << "!";
-        throw std::runtime_error(ss.str());
-    }
-
-    return shader_program;
-}
-
 int main()
 {
     Display display("LearnOpenGL", 800, 600);
     GLFWwindow* window = display.get_glfw_window();
 
     float vertices[] = {
-            0.5f, 0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            -0.5f, -0.5f, 0.0f,
-            -0.5f, 0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
     };
     unsigned int indices[] = {
-            0, 1, 3,
-            1, 2, 3,
+            0, 1, 2,
     };
 
     GLuint VAO;
@@ -96,17 +53,15 @@ int main()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     std::string vertex_source = read_shader("shaders/vertex.vert");
-    GLuint vertex_shader = create_shader(vertex_source, GL_VERTEX_SHADER);
     std::string fragment_source = read_shader("shaders/fragment.frag");
-    GLuint fragment_shader = create_shader(fragment_source, GL_FRAGMENT_SHADER);
 
-    GLuint shader_program = create_shader_program(vertex_shader, fragment_shader);
-    glUseProgram(shader_program);
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
+    Shader shader(vertex_source, fragment_source);
+    shader.use();
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     while(!display.should_close())
     {
@@ -114,7 +69,7 @@ int main()
 
         processInput(window);
 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 
         display.display();
     }
