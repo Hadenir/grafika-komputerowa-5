@@ -14,6 +14,12 @@ Shader::Shader(const std::string& vertex_shader_source, const std::string& fragm
     glDeleteShader(fragment_shader);
 }
 
+Shader::~Shader()
+{
+    if(shader_program_id != 0)
+        glDeleteProgram(shader_program_id);
+}
+
 void Shader::use() const
 {
     glUseProgram(shader_program_id);
@@ -34,7 +40,7 @@ void Shader::set_int(const std::string& name, int value)
 void Shader::set_float(const std::string& name, float value)
 {
     GLint location = glGetUniformLocation(shader_program_id, name.c_str());
-    glUniform1f(location, (GLint)value);
+    glUniform1f(location, (GLfloat)value);
 }
 
 GLuint Shader::create_shader(const std::string& shader_source, GLenum shader_type)

@@ -7,6 +7,7 @@ class Shader
 {
 public:
     Shader(const std::string& vertex_shader_source, const std::string& fragment_shader_source);
+    ~Shader();
 
     void use() const;
 
@@ -15,7 +16,7 @@ public:
     void set_float(const std::string& name, float value);
 
 private:
-    GLuint shader_program_id;
+    GLuint shader_program_id = 0;
 
     static GLuint create_shader(const std::string& shader_source, GLenum shader_type);
     static GLuint create_shader_program(GLuint vertex_shader, GLuint fragment_shader);
