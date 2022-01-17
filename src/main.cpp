@@ -1,5 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -81,6 +83,17 @@ int main()
         display.clear();
 
         processInput(window);
+
+        float fov = glm::radians(45.0f);
+        float aspect_ratio = (float)display.get_width() / (float)display.get_height();
+        glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+        glm::mat4 projection = glm::perspective(fov, aspect_ratio, 0.1f, 100.0f);
+
+        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+        shader.set_mat4("modelMat", model);
+        shader.set_mat4("viewMat", view);
+        shader.set_mat4("projMat", projection);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 

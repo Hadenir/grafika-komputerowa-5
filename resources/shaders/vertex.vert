@@ -6,9 +6,13 @@ layout (location = 2) in vec2 vertTexCoords;
 out vec3 color;
 out vec2 texCoords;
 
+uniform mat4 modelMat;
+uniform mat4 viewMat;
+uniform mat4 projMat;
+
 void main()
 {
-    gl_Position = vec4(vertPosition, 1.0);
+    gl_Position = projMat * viewMat * modelMat * vec4(vertPosition, 1.0);
     color = vertColor;
     texCoords = vertTexCoords;
 }

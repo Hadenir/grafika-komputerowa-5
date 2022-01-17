@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <sstream>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "shader.hpp"
 
@@ -41,6 +42,12 @@ void Shader::set_float(const std::string& name, float value)
 {
     GLint location = glGetUniformLocation(shader_program_id, name.c_str());
     glUniform1f(location, (GLfloat)value);
+}
+
+void Shader::set_mat4(const std::string& name, glm::mat4 value)
+{
+    GLint location = glGetUniformLocation(shader_program_id, name.c_str());
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 GLuint Shader::create_shader(const std::string& shader_source, GLenum shader_type)

@@ -27,6 +27,7 @@ Display::Display(const std::string& title, size_t width, size_t height)
         throw std::runtime_error("Failed to initialize GLAD!");
 
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+    glEnable(GL_DEPTH_TEST);
 }
 
 Display::~Display()
@@ -61,7 +62,7 @@ GLFWwindow* Display::get_glfw_window() const
 void Display::clear() const
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Display::display() const

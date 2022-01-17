@@ -9,7 +9,7 @@ file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 file(GLOB_RECURSE HEADER_FILES src/*.hpp)
 
 add_executable(grafika_komputerowa_4 ${SOURCE_FILES} ${HEADER_FILES})
-target_link_libraries(grafika_komputerowa_4 glad glfw stb_image ${OPENGL_glu_LIBRARY} ${GLFW_LIBRARIES})
+target_link_libraries(grafika_komputerowa_4 glad glfw stb_image glm ${OPENGL_glu_LIBRARY} ${GLFW_LIBRARIES})
 
 add_custom_command(TARGET grafika_komputerowa_4 POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/resources
