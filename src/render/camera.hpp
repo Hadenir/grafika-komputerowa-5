@@ -24,6 +24,8 @@ public:
 
     [[nodiscard]] glm::mat4 get_projection_matrix() const;
 
+    [[nodiscard]] glm::vec3 get_position() const;
+
 private:
     const glm::vec3 WORLD_UP = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -32,7 +34,7 @@ private:
     glm::vec3 right_dir;
     glm::vec3 up_dir;
 
-    float yaw = 0, pitch = 0;
+    float yaw = -90, pitch = 0;
 
     float movement_speed = 2.5f;
     float rotation_sensitivity = 0.1f;

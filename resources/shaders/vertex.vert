@@ -1,8 +1,9 @@
 #version 450 core
-layout (location = 0) in vec3 vertPosition;
-layout (location = 1) in vec2 vertTexCoords;
+layout (location = 0) in vec3 vertPos;
+layout (location = 1) in vec3 vertNormal;
 
-out vec2 texCoords;
+out vec3 normal;
+out vec3 fragPos;
 
 uniform mat4 modelMat;
 uniform mat4 viewMat;
@@ -10,6 +11,7 @@ uniform mat4 projMat;
 
 void main()
 {
-    gl_Position = projMat * viewMat * modelMat * vec4(vertPosition, 1.0);
-    texCoords = vertTexCoords;
+    gl_Position = projMat * viewMat * modelMat * vec4(vertPos, 1.0);
+    normal = mat3(transpose(inverse(modelMat))) * vertNormal;
+    fragPos = vec3(modelMat * vec4(vertPos, 1.0));
 }

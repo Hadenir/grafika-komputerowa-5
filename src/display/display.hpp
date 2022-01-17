@@ -43,6 +43,7 @@ private:
     std::function<void(float, float)> mouse_callback;
     std::function<void(float)> scroll_callback;
 
+    bool mouse_initialized = false;
     float last_mouse_x = 0, last_mouse_y = 0;
 
     static void framebuffer_size_callback(GLFWwindow* window, int width, int height);

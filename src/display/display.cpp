@@ -72,7 +72,7 @@ void Display::close()
 
 void Display::clear() const
 {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -102,6 +102,15 @@ void Display::key_callback(GLFWwindow* window, int key, int scancode, int action
 void Display::cursor_position_callback(GLFWwindow* window, double x_pos, double y_pos)
 {
     Display& display = *(Display*)glfwGetWindowUserPointer(window);
+
+    if(!display.mouse_initialized)
+    {
+        display.last_mouse_x = (float)x_pos;
+        display.last_mouse_y = (float)y_pos;
+
+        display.mouse_initialized = true;
+        return;
+    }
 
     float x_offset = (float)x_pos - display.last_mouse_x;
     float y_offset = (float)y_pos - display.last_mouse_y;

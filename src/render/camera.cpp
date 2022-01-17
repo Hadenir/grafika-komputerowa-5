@@ -54,6 +54,11 @@ glm::mat4 Camera::get_projection_matrix() const
     return glm::perspective(glm::radians(fov), aspect_ratio, 0.1f, 100.0f);
 }
 
+glm::vec3 Camera::get_position() const
+{
+    return position;
+}
+
 void Camera::update_vectors()
 {
     glm::vec3 front(
