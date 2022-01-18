@@ -26,6 +26,8 @@ public:
 
     [[nodiscard]] glm::vec3 get_position() const;
 
+    [[nodiscard]] glm::vec3 get_direction() const;
+
 private:
     const glm::vec3 WORLD_UP = glm::vec3(0.0f, 1.0f, 0.0f);
 

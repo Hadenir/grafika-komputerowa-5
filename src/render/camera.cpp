@@ -59,6 +59,11 @@ glm::vec3 Camera::get_position() const
     return position;
 }
 
+glm::vec3 Camera::get_direction() const
+{
+    return front_dir;
+}
+
 void Camera::update_vectors()
 {
     glm::vec3 front(
