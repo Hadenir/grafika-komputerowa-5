@@ -32,6 +32,7 @@ int main()
     Shader shader(vertex_source, fragment_source);
 
     Model model("resources/models/backpack/backpack.obj");
+    // Model model("resources/models/teapot/teapot.obj");
 
     Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), display.get_width(), display.get_height());
 
@@ -67,8 +68,6 @@ int main()
         shader.use();
         shader.set_mat4("viewMat", camera.get_view_matrix());
         shader.set_mat4("projMat", camera.get_projection_matrix());
-        shader.set_int("material.diffuse", 0);
-        shader.set_int("material.specular", 1);
         shader.set_float("material.shininess", 32.0f);
 
         shader.set_vec3("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
@@ -99,6 +98,7 @@ int main()
 
         glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
         model_matrix = glm::scale(model_matrix, glm::vec3(1.0f, 1.0f, 1.0f));
+        model_matrix = glm::rotate(model_matrix, (float)glfwGetTime() / 3, glm::vec3(0.0f, 1.0f, 0.0f));
         shader.set_mat4("modelMat", model_matrix);
         model.draw(shader);
 
