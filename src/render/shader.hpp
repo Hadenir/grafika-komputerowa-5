@@ -19,6 +19,9 @@ public:
     void set_vec4(const std::string& name, glm::vec4 value);
     void set_mat4(const std::string& name, glm::mat4 value);
 
+    Shader(const Shader&) = delete;
+    void operator=(const Shader&) = delete;
+
 private:
     GLuint shader_program_id = 0;
 

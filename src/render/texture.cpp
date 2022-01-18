@@ -4,7 +4,8 @@
 
 #include "texture.hpp"
 
-Texture::Texture(const std::string& file_path, GLenum texture_unit)
+Texture::Texture(const std::string& file_path)
+    : file_path(file_path)
 {
     stbi_set_flip_vertically_on_load(true);
 
@@ -13,7 +14,7 @@ Texture::Texture(const std::string& file_path, GLenum texture_unit)
     if(!data)
         throw std::runtime_error("Failed to load texture file!");
 
-    glActiveTexture(texture_unit);
+    glActiveTexture(GL_TEXTURE0);
     glGenTextures(1, &texture_id);
     glBindTexture(GL_TEXTURE_2D, texture_id);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -36,7 +37,6 @@ Texture::Texture(const std::string& file_path, GLenum texture_unit)
     stbi_image_free(data);
     this->width = width;
     this->height = height;
-    this->texture_unit = texture_unit;
 }
 
 Texture::~Texture()
@@ -55,7 +55,7 @@ size_t Texture::get_height() const
     return height;
 }
 
-void Texture::bind() const
+void Texture::bind(GLenum texture_unit) const
 {
     glActiveTexture(texture_unit);
     glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -64,4 +64,9 @@ void Texture::bind() const
 void Texture::unbind()
 {
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+std::string Texture::get_file_path() const
+{
+    return file_path;
 }

@@ -11,9 +11,6 @@ public:
     Display(const std::string& title, size_t width, size_t height);
     ~Display();
 
-    Display(const Display&) = delete;
-    void operator=(const Display&) = delete;
-
     [[nodiscard]] size_t get_width() const;
     [[nodiscard]] size_t get_height() const;
 
@@ -32,6 +29,9 @@ public:
     void set_mouse_callback(std::function<void(float, float)> callback);
 
     void set_scroll_callback(std::function<void(float)> callback);
+
+    Display(const Display&) = delete;
+    void operator=(const Display&) = delete;
 
 private:
     size_t width, height;

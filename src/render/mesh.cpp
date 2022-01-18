@@ -2,8 +2,11 @@
 
 #include <utility>
 
+Vertex::Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 texture_coords)
+    : position(position), normal(normal), texture_coords(texture_coords)
+{}
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures)
     : vertices(std::move(vertices)), indices(std::move(indices)), textures(std::move(textures))
 {
     setup_mesh();
@@ -11,20 +14,18 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 
 void Mesh::draw(Shader& shader)
 {
-    unsigned int texture_no = 1;
     for(auto i = 0; i < textures.size(); i++)
     {
-        Texture& texture = textures[i];
+        Texture& texture = *textures[i];
 
-        shader.set_int("material.texture" + std::to_string(texture_no), i);
+        shader.set_int("material.texture" + std::to_string(i), i);
 
-        texture.bind();
-        texture_no++;
+        texture.bind(GL_TEXTURE0 + i);
     }
 
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }
 
