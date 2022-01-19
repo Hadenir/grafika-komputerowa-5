@@ -1,5 +1,8 @@
 #include <stdexcept>
 #include <utility>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "display.hpp"
@@ -14,7 +17,6 @@ Display::Display(const std::string& title, size_t width, size_t height)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-
     window = glfwCreateWindow((int)width, (int)height, title.c_str(), nullptr, nullptr);
     if (window == nullptr)
         throw std::runtime_error("Failed to create GLFW window!");
@@ -27,13 +29,18 @@ Display::Display(const std::string& title, size_t width, size_t height)
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetScrollCallback(window, mouse_scroll_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
         throw std::runtime_error("Failed to initialize GLAD!");
 
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
     glEnable(GL_DEPTH_TEST);
+
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 450");
 }
 
 Display::~Display()
@@ -70,15 +77,23 @@ void Display::close()
     glfwSetWindowShouldClose(window, true);
 }
 
-void Display::clear() const
+void Display::begin_frame() const
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glfwPollEvents();
+
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
 }
 
-void Display::display() const
+void Display::end_frame() const
 {
-    glfwPollEvents();
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
     glfwSwapBuffers(window);
 }
 

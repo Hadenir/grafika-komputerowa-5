@@ -1,7 +1,9 @@
-#include <glad/glad.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <imgui.h>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -31,14 +33,14 @@ int main()
     std::string fragment_source = read_shader("resources/shaders/fragment.frag");
     Shader shader(vertex_source, fragment_source);
 
-    Model model("resources/models/backpack/backpack.obj");
-    // Model model("resources/models/teapot/teapot.obj");
+    // Model model("resources/models/backpack/backpack.obj");
+    Model model("resources/models/teapot/teapot.obj");
 
     Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), display.get_width(), display.get_height());
 
     display.set_keyboard_callback([&](int key) { if(key == GLFW_KEY_ESCAPE) display.close(); });
     display.set_mouse_callback([&](float x, float y) { camera.rotate(x, -y); });
-    display.set_scroll_callback([&](float off) { camera.zoom(off); std::cout << off << std::endl; });
+    display.set_scroll_callback([&](float off) { camera.zoom(off); });
 
     glm::vec3 light_pos(1.2f, 1.0f, 2.0f);
 
@@ -46,11 +48,11 @@ int main()
     float last_frame = (float)glfwGetTime();
     while(!display.should_close())
     {
-        display.clear();
-
         float current_frame = (float)glfwGetTime();
         delta_time = current_frame - last_frame;
         last_frame = current_frame;
+
+        display.begin_frame();
 
         if(display.get_key(GLFW_KEY_W))
             camera.move(Direction::Forward, delta_time);
@@ -102,7 +104,9 @@ int main()
         shader.set_mat4("modelMat", model_matrix);
         model.draw(shader);
 
-        display.display();
+        ImGui::ShowDemoWindow();
+
+        display.end_frame();
     }
 
     return 0;

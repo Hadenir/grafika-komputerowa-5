@@ -20,9 +20,9 @@ public:
 
     void close();
 
-    void clear() const;
+    void begin_frame() const;
 
-    void display() const;
+    void end_frame() const;
 
     void set_keyboard_callback(std::function<void(int)> callback);
 
