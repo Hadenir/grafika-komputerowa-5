@@ -44,6 +44,11 @@ void Camera::zoom(float offset)
         fov = 65.0f;
 }
 
+void Camera::resize_viewport(size_t display_width, size_t display_height)
+{
+    aspect_ratio = (float)display_width / (float)display_height;
+}
+
 glm::mat4 Camera::get_view_matrix() const
 {
     return glm::lookAt(position, position + front_dir, up_dir);

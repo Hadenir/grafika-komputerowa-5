@@ -18,9 +18,12 @@ struct Vertex {
 class Mesh
 {
 public:
-    Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures);
+    Mesh(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices, std::vector<Texture*>&& textures);
 
-    void draw(Shader& shader);
+    void draw(Shader& shader) const;
+
+    Mesh(Mesh&&) = default;
+    Mesh& operator=(Mesh&&) = default;
 
 private:
     std::vector<Vertex> vertices;

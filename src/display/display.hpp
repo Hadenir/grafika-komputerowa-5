@@ -30,6 +30,8 @@ public:
 
     void set_scroll_callback(std::function<void(float)> callback);
 
+    void set_resize_callback(std::function<void(size_t, size_t)> callback);
+
     Display(const Display&) = delete;
     void operator=(const Display&) = delete;
 
@@ -42,6 +44,7 @@ private:
     std::function<void(int)> keyboard_callback;
     std::function<void(float, float)> mouse_callback;
     std::function<void(float)> scroll_callback;
+    std::function<void(size_t, size_t)> resize_callback;
 
     bool mouse_initialized = false;
     float last_mouse_x = 0, last_mouse_y = 0;

@@ -20,6 +20,8 @@ public:
 
     void zoom(float offset);
 
+    void resize_viewport(size_t display_width, size_t display_height);
+
     [[nodiscard]] glm::mat4 get_view_matrix() const;
 
     [[nodiscard]] glm::mat4 get_projection_matrix() const;

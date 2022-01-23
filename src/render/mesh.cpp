@@ -6,13 +6,13 @@ Vertex::Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 texture_coords)
     : position(position), normal(normal), texture_coords(texture_coords)
 {}
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures)
+Mesh::Mesh(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices, std::vector<Texture*>&& textures)
     : vertices(std::move(vertices)), indices(std::move(indices)), textures(std::move(textures))
 {
     setup_mesh();
 }
 
-void Mesh::draw(Shader& shader)
+void Mesh::draw(Shader& shader) const
 {
     for(auto i = 0; i < textures.size(); i++)
     {

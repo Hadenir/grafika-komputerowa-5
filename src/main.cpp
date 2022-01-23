@@ -2,17 +2,16 @@
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <imgui.h>
 #include <fstream>
 #include <sstream>
-#include <iostream>
 
 #include "display/display.hpp"
 #include "render/shader.hpp"
 #include "render/texture.hpp"
 #include "render/camera.hpp"
 #include "render/model.hpp"
+#include "object/render_object.hpp"
 
 std::string read_shader(const std::string& path)
 {
@@ -34,13 +33,19 @@ int main()
     Shader shader(vertex_source, fragment_source);
 
     // Model model("resources/models/backpack/backpack.obj");
-    Model model("resources/models/teapot/teapot.obj");
+    // Model model("resources/models/teapot/teapot.obj");
+    RenderObject vazz_car(
+            Model("resources/models/vazz/Vazz.obj"),
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.05f, 0.05f, 0.05f));
 
-    Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), display.get_width(), display.get_height());
+    Camera camera(glm::vec3(0.0f, 0.0f, 0.0f), display.get_width(), display.get_height());
 
     display.set_keyboard_callback([&](int key) { if(key == GLFW_KEY_ESCAPE) display.close(); });
     display.set_mouse_callback([&](float x, float y) { camera.rotate(x, -y); });
     display.set_scroll_callback([&](float off) { camera.zoom(off); });
+    display.set_resize_callback([&](size_t width, size_t height) { camera.resize_viewport(width, height); });
 
     glm::vec3 light_pos(1.2f, 1.0f, 2.0f);
 
@@ -97,14 +102,9 @@ int main()
         shader.set_vec3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
         shader.set_vec3("viewPos", camera.get_position());
+        vazz_car.draw(shader);
 
-        glm::mat4 model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-        model_matrix = glm::scale(model_matrix, glm::vec3(1.0f, 1.0f, 1.0f));
-        model_matrix = glm::rotate(model_matrix, (float)glfwGetTime() / 3, glm::vec3(0.0f, 1.0f, 0.0f));
-        shader.set_mat4("modelMat", model_matrix);
-        model.draw(shader);
-
-        ImGui::ShowDemoWindow();
+        // ImGui::ShowDemoWindow();
 
         display.end_frame();
     }

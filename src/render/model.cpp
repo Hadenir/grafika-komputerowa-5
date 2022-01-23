@@ -3,6 +3,7 @@
 #include <assimp/postprocess.h>
 #include <stdexcept>
 #include <filesystem>
+#include <queue>
 
 #include "model.hpp"
 
@@ -12,13 +13,7 @@ Model::Model(const std::string& file_path)
     load_model(file_path);
 }
 
-Model::~Model()
-{
-    for(auto texture : textures)
-        delete texture;
-}
-
-void Model::draw(Shader& shader)
+void Model::draw(Shader& shader) const
 {
     for(auto& mesh: meshes)
         mesh.draw(shader);
@@ -39,19 +34,22 @@ void Model::load_model(const std::string& file_path)
 
     file_dir = std::filesystem::path(file_path).parent_path().string();
 
-    process_node(scene->mRootNode, scene);
-}
-
-void Model::process_node(aiNode* node, const aiScene* scene)
-{
-    for(auto i = 0; i < node->mNumMeshes; i++)
+    std::queue<aiNode*> nodes;
+    nodes.push(scene->mRootNode);
+    while(!nodes.empty())
     {
-        aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        meshes.push_back(process_mesh(mesh, scene));
-    }
+        aiNode* node = nodes.front();
+        nodes.pop();
 
-    for(auto i = 0; i < node->mNumChildren; i++)
-        process_node(node->mChildren[i], scene);
+        for(auto i = 0; i < node->mNumMeshes; i++)
+        {
+            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+            meshes.push_back(process_mesh(mesh, scene));
+        }
+
+        for(auto i = 0; i < node->mNumChildren; i++)
+            nodes.push(node->mChildren[i]);
+    }
 }
 
 Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
@@ -102,7 +100,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
         textures.insert(textures.end(), specular_textures.begin(), specular_textures.end());
     }
 
-    return Mesh(vertices, indices, textures);
+    return Mesh(std::move(vertices), std::move(indices), std::move(textures));
 }
 
 std::vector<Texture*> Model::load_textures(aiMaterial* material, aiTextureType texture_type)
@@ -116,14 +114,14 @@ std::vector<Texture*> Model::load_textures(aiMaterial* material, aiTextureType t
         std::string texture_path = std::filesystem::path(file_dir).append(path.C_Str()).string();
 
         auto text_it = std::find_if(textures.begin(), textures.end(),
-                [=](auto texture) { return texture->get_file_path() == texture_path; });
+                [=](auto& texture) { return texture->get_file_path() == texture_path; });
         if(text_it == textures.end())
         {
-            textures.push_back(new Texture(texture_path));
+            textures.push_back(std::make_unique<Texture>(texture_path));
             text_it = --textures.end();
         }
 
-        result.push_back(*text_it);
+        result.push_back(text_it->get());
     }
     return result;
 }

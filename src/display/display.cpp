@@ -1,10 +1,10 @@
 #include <stdexcept>
 #include <utility>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include "display.hpp"
 
 Display::Display(const std::string& title, size_t width, size_t height)
@@ -16,6 +16,7 @@ Display::Display(const std::string& title, size_t width, size_t height)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     window = glfwCreateWindow((int)width, (int)height, title.c_str(), nullptr, nullptr);
     if (window == nullptr)
@@ -29,13 +30,14 @@ Display::Display(const std::string& title, size_t width, size_t height)
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetScrollCallback(window, mouse_scroll_callback);
-    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
         throw std::runtime_error("Failed to initialize GLAD!");
 
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
 
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
@@ -50,6 +52,8 @@ Display::~Display()
 
     if(glfw_initialized)
         glfwTerminate();
+
+    ImGui::DestroyContext();
 }
 
 size_t Display::get_width() const
@@ -104,6 +108,9 @@ void Display::framebuffer_size_callback(GLFWwindow* window, int width, int heigh
     display.height = height;
 
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+
+    if(display.resize_callback)
+        display.resize_callback(width, height);
 }
 
 void Display::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -157,4 +164,9 @@ void Display::set_mouse_callback(std::function<void(float, float)> callback)
 void Display::set_scroll_callback(std::function<void(float)> callback)
 {
     scroll_callback = std::move(callback);
+}
+
+void Display::set_resize_callback(std::function<void(size_t, size_t)> callback)
+{
+    resize_callback = std::move(callback);
 }
