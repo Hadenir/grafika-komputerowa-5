@@ -7,8 +7,8 @@ in vec2 texCoords;
 out vec4 fragColor;
 
 uniform struct Material {
-    sampler2D texture0;
-    sampler2D texture1;
+    sampler2D texture0; // Diffuse
+    sampler2D texture1; // Specular
     float shininess;
 } material;
 

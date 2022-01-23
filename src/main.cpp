@@ -28,8 +28,8 @@ int main()
 {
     Display display("LearnOpenGL", 800, 600);
 
-    std::string vertex_source = read_shader("resources/shaders/vertex.vert");
-    std::string fragment_source = read_shader("resources/shaders/fragment.frag");
+    std::string vertex_source = read_shader("resources/shaders/phong.vert");
+    std::string fragment_source = read_shader("resources/shaders/phong.frag");
     Shader shader(vertex_source, fragment_source);
 
     // Model model("resources/models/backpack/backpack.obj");
