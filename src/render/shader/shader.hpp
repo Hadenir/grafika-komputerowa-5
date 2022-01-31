@@ -1,14 +1,14 @@
 #pragma once
 
 #include <string>
-#include <glad/glad.h>
-#include <glm/glm.hpp>
+#include "glad/glad.h"
+#include "glm/glm.hpp"
 
 class Shader
 {
 public:
     Shader(const std::string& vertex_shader_source, const std::string& fragment_shader_source);
-    ~Shader();
+    virtual ~Shader();
 
     void use() const;
 
@@ -24,6 +24,8 @@ public:
 
 private:
     GLuint shader_program_id = 0;
+
+    GLint get_uniform_location(const std::string& name) const;
 
     static GLuint create_shader(const std::string& shader_source, GLenum shader_type);
     static GLuint create_shader_program(GLuint vertex_shader, GLuint fragment_shader);

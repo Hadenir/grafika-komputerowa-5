@@ -1,6 +1,6 @@
 #include <stdexcept>
 #include <sstream>
-#include <glm/gtc/type_ptr.hpp>
+#include "glm/gtc/type_ptr.hpp"
 
 #include "shader.hpp"
 
@@ -28,38 +28,46 @@ void Shader::use() const
 
 void Shader::set_bool(const std::string& name, bool value)
 {
-    GLint location = glGetUniformLocation(shader_program_id, name.c_str());
+    GLint location = get_uniform_location(name);
     glUniform1i(location, (GLint)value);
 }
 
 void Shader::set_int(const std::string& name, int value)
 {
-    GLint location = glGetUniformLocation(shader_program_id, name.c_str());
+    GLint location = get_uniform_location(name);
     glUniform1i(location, (GLint)value);
 }
 
 void Shader::set_float(const std::string& name, float value)
 {
-    GLint location = glGetUniformLocation(shader_program_id, name.c_str());
+    GLint location = get_uniform_location(name);
     glUniform1f(location, (GLfloat)value);
 }
 
 void Shader::set_vec3(const std::string& name, glm::vec3 value)
 {
-    GLint location = glGetUniformLocation(shader_program_id, name.c_str());
+    GLint location = get_uniform_location(name);
     glUniform3fv(location, 1, glm::value_ptr(value));
 }
 
 void Shader::set_vec4(const std::string& name, glm::vec4 value)
 {
-    GLint location = glGetUniformLocation(shader_program_id, name.c_str());
+    GLint location = get_uniform_location(name);
     glUniform4fv(location, 1, glm::value_ptr(value));
 }
 
 void Shader::set_mat4(const std::string& name, glm::mat4 value)
 {
-    GLint location = glGetUniformLocation(shader_program_id, name.c_str());
+    GLint location = get_uniform_location(name);
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+
+GLint Shader::get_uniform_location(const std::string& name) const
+{
+    GLint location = glGetUniformLocation(shader_program_id, name.c_str());
+    if(location == -1) throw std::runtime_error("Invalid uniform name: " + name);
+
+    return location;
 }
 
 GLuint Shader::create_shader(const std::string& shader_source, GLenum shader_type)

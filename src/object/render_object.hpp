@@ -2,26 +2,36 @@
 
 #include <glm/glm.hpp>
 
-#include "../render/shader.hpp"
+#include "../render/shader/shader.hpp"
 #include "../render/model.hpp"
 
 class RenderObject
 {
 public:
     explicit RenderObject(
-            Model&& model,
+            Model* model,
             glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
             glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f),
             glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f));
 
-    void draw(Shader& shader) const;
+    void draw(PhongShader& shader) const;
+
+    void move(glm::vec3 offset);
+    void set_position(glm::vec3 position);
+    [[nodiscard]] glm::vec3 get_position() const;
+
+    void rotate(glm::vec3 offset);
+    void set_rotation(glm::vec3 rotation);
+    [[nodiscard]] glm::vec3 get_rotation() const;
+
+    void set_scale(glm::vec3 scale);
 
 private:
     glm::vec3 position;
     glm::vec3 rotation;
     glm::vec3 scale;
 
-    Model model;
+    Model* model;
 
     [[nodiscard]] glm::mat4 get_model_matrix() const;
 };

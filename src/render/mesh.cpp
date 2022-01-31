@@ -6,21 +6,18 @@ Vertex::Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 texture_coords)
     : position(position), normal(normal), texture_coords(texture_coords)
 {}
 
-Mesh::Mesh(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices, std::vector<Texture*>&& textures)
-    : vertices(std::move(vertices)), indices(std::move(indices)), textures(std::move(textures))
+Mesh::Mesh(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices, Material&& material)
+    : vertices(std::move(vertices)), indices(std::move(indices)), material(std::move(material))
 {
     setup_mesh();
 }
 
-void Mesh::draw(Shader& shader) const
+void Mesh::draw(PhongShader& shader) const
 {
-    for(auto i = 0; i < textures.size(); i++)
+    shader.set_material(material);
+    for(auto i = 0; i < material.textures.size(); i++)
     {
-        Texture& texture = *textures[i];
-
-        shader.set_int("material.texture" + std::to_string(i), i);
-
-        texture.bind(GL_TEXTURE0 + i);
+        material.textures[i]->bind(GL_TEXTURE0 + i);
     }
 
     glActiveTexture(GL_TEXTURE0);

@@ -5,14 +5,14 @@
 #include <assimp/scene.h>
 
 #include "mesh.hpp"
-#include "shader.hpp"
+#include "shader/shader.hpp"
 
 class Model
 {
 public:
     explicit Model(const std::string& file_path);
 
-    void draw(Shader& shader) const;
+    void draw(PhongShader& shader) const;
 
     [[nodiscard]] std::string get_file_path() const;
 

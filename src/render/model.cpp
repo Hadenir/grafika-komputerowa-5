@@ -13,7 +13,7 @@ Model::Model(const std::string& file_path)
     load_model(file_path);
 }
 
-void Model::draw(Shader& shader) const
+void Model::draw(PhongShader& shader) const
 {
     for(auto& mesh: meshes)
         mesh.draw(shader);
@@ -59,6 +59,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
     std::vector<unsigned int> indices;
     vertices.reserve(3 * mesh->mNumFaces);
     std::vector<Texture*> textures;
+    float shininess = 0.0f;
 
     for(auto i = 0; i < mesh->mNumVertices; i++)
     {
@@ -93,6 +94,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
     if(mesh->mMaterialIndex >= 0)
     {
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+        material->Get(AI_MATKEY_SHININESS, shininess);
 
         std::vector<Texture*> diffuse_textures = load_textures(material, aiTextureType_DIFFUSE);
         textures.insert(textures.end(), diffuse_textures.begin(), diffuse_textures.end());
@@ -100,7 +102,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
         textures.insert(textures.end(), specular_textures.begin(), specular_textures.end());
     }
 
-    return Mesh(std::move(vertices), std::move(indices), std::move(textures));
+    return Mesh(std::move(vertices), std::move(indices), Material(std::move(textures), shininess));
 }
 
 std::vector<Texture*> Model::load_textures(aiMaterial* material, aiTextureType texture_type)
@@ -111,7 +113,7 @@ std::vector<Texture*> Model::load_textures(aiMaterial* material, aiTextureType t
     {
         aiString path;
         material->GetTexture(texture_type, i, &path);
-        std::string texture_path = std::filesystem::path(file_dir).append(path.C_Str()).string();
+        std::string texture_path = file_dir + '/' + path.C_Str();
 
         auto text_it = std::find_if(textures.begin(), textures.end(),
                 [=](auto& texture) { return texture->get_file_path() == texture_path; });
