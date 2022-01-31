@@ -7,6 +7,10 @@
 
 #include "model.hpp"
 
+Model::Model(std::vector<Mesh>&& meshes, std::vector<std::unique_ptr<Texture>>&& textures)
+    : meshes(std::move(meshes)), textures(std::move(textures))
+{}
+
 Model::Model(const std::string& file_path)
         : file_path(file_path)
 {
@@ -59,7 +63,6 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
     std::vector<unsigned int> indices;
     vertices.reserve(3 * mesh->mNumFaces);
     std::vector<Texture*> textures;
-    float shininess = 0.0f;
 
     for(auto i = 0; i < mesh->mNumVertices; i++)
     {
@@ -91,18 +94,31 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
             indices.push_back(face.mIndices[j]);
     }
 
-    if(mesh->mMaterialIndex >= 0)
-    {
-        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        material->Get(AI_MATKEY_SHININESS, shininess);
+    if(mesh->mMaterialIndex < 0) throw std::runtime_error("Mesh has no material");
 
-        std::vector<Texture*> diffuse_textures = load_textures(material, aiTextureType_DIFFUSE);
-        textures.insert(textures.end(), diffuse_textures.begin(), diffuse_textures.end());
-        std::vector<Texture*> specular_textures = load_textures(material, aiTextureType_SPECULAR);
-        textures.insert(textures.end(), specular_textures.begin(), specular_textures.end());
-    }
+    aiMaterial* ai_material = scene->mMaterials[mesh->mMaterialIndex];
 
-    return Mesh(std::move(vertices), std::move(indices), Material(std::move(textures), shininess));
+    std::vector<Texture*> diffuse_textures = load_textures(ai_material, aiTextureType_DIFFUSE);
+    textures.insert(textures.end(), diffuse_textures.begin(), diffuse_textures.end());
+    std::vector<Texture*> specular_textures = load_textures(ai_material, aiTextureType_SPECULAR);
+    textures.insert(textures.end(), specular_textures.begin(), specular_textures.end());
+
+    float shininess;
+    ai_material->Get(AI_MATKEY_SHININESS, shininess);
+    aiColor3D ambient;
+    ai_material->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
+    aiColor3D diffuse;
+    ai_material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
+    aiColor3D specular;
+    ai_material->Get(AI_MATKEY_COLOR_SPECULAR, specular);
+    Material material(
+            glm::vec3(ambient.r, ambient.g, ambient.b),
+            glm::vec3(diffuse.r, diffuse.g, diffuse.b),
+            glm::vec3(specular.r, specular.g, specular.b),
+            shininess,
+            std::move(textures));
+
+    return Mesh(std::move(vertices), std::move(indices), std::move(material));
 }
 
 std::vector<Texture*> Model::load_textures(aiMaterial* material, aiTextureType texture_type)

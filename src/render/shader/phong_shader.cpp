@@ -8,9 +8,12 @@ PhongShader::PhongShader(const std::string& vertex_shader_source, const std::str
 
 void PhongShader::set_material(const Material& material)
 {
+    set_vec3("material.ambient", material.ambient);
+    set_vec3("material.diffuse", material.diffuse);
+    set_vec3("material.specular", material.specular);
+    set_float("material.shininess", material.shininess);
     set_int("material.textureDiffuse", 0);
     set_int("material.textureSpecular", 1);
-    set_float("material.shininess", material.shininess);
 }
 
 void PhongShader::set_directional_light(size_t i, DirectionalLight light)

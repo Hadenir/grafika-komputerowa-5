@@ -18,6 +18,9 @@ public:
 
     [[nodiscard]] std::string get_file_path() const;
 
+    Texture(Texture&&) = default;
+    Texture& operator=(Texture&&) = default;
+
     Texture(const Texture&) = delete;
     void operator=(const Texture&) = delete;
 

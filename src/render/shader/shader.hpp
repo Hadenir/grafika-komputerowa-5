@@ -25,7 +25,7 @@ public:
 private:
     GLuint shader_program_id = 0;
 
-    GLint get_uniform_location(const std::string& name) const;
+    [[nodiscard]] GLint get_uniform_location(const std::string& name) const;
 
     static GLuint create_shader(const std::string& shader_source, GLenum shader_type);
     static GLuint create_shader_program(GLuint vertex_shader, GLuint fragment_shader);

@@ -10,6 +10,7 @@
 class Model
 {
 public:
+    explicit Model(std::vector<Mesh>&& meshes, std::vector<std::unique_ptr<Texture>>&& textures);
     explicit Model(const std::string& file_path);
 
     void draw(PhongShader& shader) const;
