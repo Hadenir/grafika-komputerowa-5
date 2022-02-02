@@ -47,7 +47,7 @@ uniform struct SpotLight {
     vec3 direction;
     float innerCutoff;
     float outerCutoff;
-} spotLights[10];
+} spotLights[65];
 
 uniform int numSpotLights;
 

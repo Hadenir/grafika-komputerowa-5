@@ -20,6 +20,13 @@ void Camera::move(Direction direction, float dt)
         case Direction::Up: position += up_dir * dr; break;
         case Direction::Down: position -= up_dir * dr; break;
     }
+    update_vectors();
+}
+
+void Camera::set_position(glm::vec3 position)
+{
+    this->position = position;
+    update_vectors();
 }
 
 void Camera::rotate(float x_offset, float y_offset)
@@ -32,6 +39,13 @@ void Camera::rotate(float x_offset, float y_offset)
     else if(pitch < -89.5f)
         pitch = -89.5f;
 
+    update_vectors();
+}
+
+void Camera::set_rotation(float pitch, float yaw)
+{
+    this->pitch = pitch;
+    this->yaw = yaw;
     update_vectors();
 }
 
@@ -49,9 +63,12 @@ void Camera::resize_viewport(size_t display_width, size_t display_height)
     aspect_ratio = (float)display_width / (float)display_height;
 }
 
-glm::mat4 Camera::get_view_matrix() const
+glm::mat4 Camera::get_view_matrix(glm::mat4 model_matrix, glm::mat4 rotation_matrix) const
 {
-    return glm::lookAt(position, position + front_dir, up_dir);
+    glm::vec3 world_pos = model_matrix * glm::vec4(position, 1.0);
+    glm::vec3 world_look_dir = model_matrix * glm::vec4(position + front_dir, 1.0f);
+    glm::vec3 world_up_dir = rotation_matrix * glm::vec4(up_dir, 1.0f);
+    return glm::lookAt(world_pos, world_look_dir, world_up_dir);
 }
 
 glm::mat4 Camera::get_projection_matrix() const
@@ -80,3 +97,4 @@ void Camera::update_vectors()
     right_dir = glm::normalize(glm::cross(front_dir, WORLD_UP));
     up_dir = glm::normalize(glm::cross(right_dir, front_dir));
 }
+

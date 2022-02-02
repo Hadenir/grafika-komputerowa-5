@@ -26,13 +26,16 @@ public:
 
     void set_scale(glm::vec3 scale);
 
+    [[nodiscard]] glm::vec3 get_front_dir() const;
+
+    [[nodiscard]] glm::mat4 get_rotation_matrix() const;
+    [[nodiscard]] glm::mat4 get_model_matrix() const;
+
 private:
     glm::vec3 position;
     glm::vec3 rotation;
     glm::vec3 scale;
 
     Model* model;
-
-    [[nodiscard]] glm::mat4 get_model_matrix() const;
 };
 

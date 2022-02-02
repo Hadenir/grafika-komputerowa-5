@@ -30,7 +30,7 @@ Display::Display(const std::string& title, size_t width, size_t height)
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetScrollCallback(window, mouse_scroll_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
         throw std::runtime_error("Failed to initialize GLAD!");
@@ -66,9 +66,14 @@ size_t Display::get_height() const
     return height;
 }
 
-bool Display::get_key(int key)
+bool Display::get_key(int key) const
 {
     return glfwGetKey(window, key) == GLFW_PRESS;
+}
+
+bool Display::get_mouse_button(int button) const
+{
+    return glfwGetMouseButton(window, button) == GLFW_PRESS;
 }
 
 bool Display::should_close() const
@@ -83,7 +88,7 @@ void Display::close()
 
 void Display::begin_frame() const
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.53f, 0.81f, 0.92f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glfwPollEvents();

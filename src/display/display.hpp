@@ -14,7 +14,8 @@ public:
     [[nodiscard]] size_t get_width() const;
     [[nodiscard]] size_t get_height() const;
 
-    [[nodiscard]] bool get_key(int key);
+    [[nodiscard]] bool get_key(int key) const;
+    [[nodiscard]] bool get_mouse_button(int button) const;
 
     [[nodiscard]] bool should_close() const;
 

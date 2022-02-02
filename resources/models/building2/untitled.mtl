@@ -1,0 +1,38 @@
+# Blender MTL File: 'None'
+# Material Count: 3
+
+newmtl Farm_house_D
+Ns 9.849201
+Ka 1.000000 1.000000 1.000000
+Kd 0.698000 0.698000 0.698000
+Ks 0.000000 0.000000 0.000000
+Ke 0.0 0.0 0.0
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd Farm_house_D.jpg
+map_Ks Farm_house_D.jpg
+
+newmtl House_Side_D
+Ns 9.849201
+Ka 1.000000 1.000000 1.000000
+Kd 0.698000 0.698000 0.698000
+Ks 0.000000 0.000000 0.000000
+Ke 0.0 0.0 0.0
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd House_Side_D.jpg
+map_Ks House_Side_D.jpg
+
+newmtl Roof_D
+Ns 9.849201
+Ka 1.000000 1.000000 1.000000
+Kd 0.698000 0.698000 0.698000
+Ks 0.000000 0.000000 0.000000
+Ke 0.0 0.0 0.0
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd Roof_D.jpg
+map_Ks Roof_D.jpg

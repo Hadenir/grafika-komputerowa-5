@@ -3,7 +3,7 @@
 #include "render_object.hpp"
 
 RenderObject::RenderObject(Model* model, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
-        : model(model), position(position), rotation(rotation), scale(scale)
+    : model(model), position(position), rotation(rotation), scale(scale)
 {}
 
 void RenderObject::draw(PhongShader& shader) const
@@ -13,14 +13,21 @@ void RenderObject::draw(PhongShader& shader) const
     model->draw(shader);
 }
 
+glm::mat4 RenderObject::get_rotation_matrix() const
+{
+    glm::mat4 rotation_matrix(1.0f);
+    rotation_matrix = glm::rotate(rotation_matrix, rotation.x * glm::pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
+    rotation_matrix = glm::rotate(rotation_matrix, rotation.y * glm::pi<float>(), glm::vec3(0.0f, 1.0f, 0.0f));
+    rotation_matrix = glm::rotate(rotation_matrix, rotation.z * glm::pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
+    return rotation_matrix;
+}
+
 glm::mat4 RenderObject::get_model_matrix() const
 {
     glm::mat4 model_matrix(1.0f);
-    model_matrix = glm::scale(model_matrix, scale);
-    model_matrix = glm::rotate(model_matrix, rotation.x * glm::pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
-    model_matrix = glm::rotate(model_matrix, rotation.y * glm::pi<float>(), glm::vec3(0.0f, 1.0f, 0.0f));
-    model_matrix = glm::rotate(model_matrix, rotation.z * glm::pi<float>(), glm::vec3(0.0f, 0.0f, 1.0f));
     model_matrix = glm::translate(model_matrix, position);
+    model_matrix = model_matrix * get_rotation_matrix();
+    model_matrix = glm::scale(model_matrix, scale);
     return model_matrix;
 }
 
@@ -57,4 +64,9 @@ glm::vec3 RenderObject::get_rotation() const
 void RenderObject::set_scale(glm::vec3 scale)
 {
     this->scale = scale;
+}
+
+glm::vec3 RenderObject::get_front_dir() const
+{
+    return get_rotation_matrix() * glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 }
