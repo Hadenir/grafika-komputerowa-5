@@ -30,6 +30,9 @@ void Scene::update(const Display& display, float delta_time)
         camera.set_rotation(-10.0f, 90.0f);
         camera_speed = 40.0f;
     }
+    ImGui::Text("Fog:");
+    ImGui::SliderFloat("Fog Density", &fog_density, 0.001, 0.05);
+    ImGui::SliderFloat("Fog Gradient", &fog_gradient, 1.0, 10.0);
     ImGui::End();
 
     if(display.get_key(GLFW_KEY_UP))
@@ -99,6 +102,10 @@ void Scene::draw(PhongShader& shader) const
     for(auto i = 0; i < spot_lights.size(); i++)
         shader.set_spot_light(i, spot_lights[i]);
 
+    shader.set_vec4("skyColor", sky_color);
+    shader.set_float("fogDensity", fog_density);
+    shader.set_float("fogGradient", fog_gradient);
+
     for(const auto& object: objects)
         object->draw(shader);
 }
@@ -147,9 +154,9 @@ void Scene::setup_scene()
         glm::vec3(0.0f, 0.5f, 0.0f),
         glm::vec3(0.025f, 0.025f, 0.025f))).get();
 
-    for(int j = -12; j <= 12; j++)
+    for(int j = -15; j <= 15; j++)
     {
-        for(int i = -12; i <= 12; i++)
+        for(int i = -15; i <= 15; i++)
         {
             float x = (float) i;
             float z = (float) j;

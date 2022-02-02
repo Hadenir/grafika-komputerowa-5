@@ -3,8 +3,11 @@
 in vec3 fragNormal;
 in vec3 fragPos;
 in vec2 texCoords;
+in float visibility;
 
 out vec4 fragColor;
+
+uniform vec4 skyColor;
 
 uniform struct Material {
     vec3 ambient;
@@ -47,7 +50,7 @@ uniform struct SpotLight {
     vec3 direction;
     float innerCutoff;
     float outerCutoff;
-} spotLights[65];
+} spotLights[90];
 
 uniform int numSpotLights;
 
@@ -76,7 +79,7 @@ void main()
         resultColor += calculateSpotLight(spotLights[i], normal, fragPos, viewDir);
     }
 
-    fragColor = vec4(resultColor, 1.0);
+    fragColor = mix(skyColor, vec4(resultColor, 1.0), visibility);
 }
 
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir)
