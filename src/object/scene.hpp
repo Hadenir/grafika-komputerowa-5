@@ -31,6 +31,8 @@ private:
     glm::vec4 sky_color = glm::vec4 (0.53f, 0.81f, 0.92f, 1.0f);
     float fog_density = 0.02;
     float fog_gradient = 3.0;
+    float reflectors_angle = -0.05f;
+    float reflectors_spread = 10.0f;
 
     void setup_scene();
 };

@@ -14,8 +14,6 @@ Scene::Scene(Camera& camera)
 
 void Scene::update(const Display& display, float delta_time)
 {
-    // ImGui::ShowDemoWindow();
-
     ImGui::Begin("Window");
     ImGui::Text("Camera Type:");
     if(ImGui::RadioButton("Free Camera", &camera_type_id, 0))
@@ -31,8 +29,11 @@ void Scene::update(const Display& display, float delta_time)
         camera_speed = 40.0f;
     }
     ImGui::Text("Fog:");
-    ImGui::SliderFloat("Fog Density", &fog_density, 0.001, 0.05);
-    ImGui::SliderFloat("Fog Gradient", &fog_gradient, 1.0, 10.0);
+    ImGui::SliderFloat("Fog Density", &fog_density, 0.001f, 0.05f);
+    ImGui::SliderFloat("Fog Gradient", &fog_gradient, 1.0f, 10.0f);
+    ImGui::Text("Reflectors:");
+    ImGui::SliderFloat("Reflectors Angle", &reflectors_angle, -0.5f, 0.5f);
+    ImGui::SliderFloat("Reflectors Spread", &reflectors_spread, 9.5f, 20.0f);
     ImGui::End();
 
     if(display.get_key(GLFW_KEY_UP))
@@ -62,19 +63,25 @@ void Scene::update(const Display& display, float delta_time)
         glm::mat4 car_rotation_mat = car->get_rotation_matrix();
         glm::vec3 camera_pos = car_model_mat * glm::vec4(camera.get_position(), 1.0);
         glm::vec3 camera_dir = car_rotation_mat * glm::vec4(camera.get_direction(), 1.0f);
-        spot_lights[0].position = camera_pos;
-        spot_lights[0].direction = camera_dir;
+        spot_lights[2].position = camera_pos;
+        spot_lights[2].direction = camera_dir;
     }
     else
     {
-        spot_lights[0].position = camera.get_position();
-        spot_lights[0].direction = camera.get_direction();
+        spot_lights[2].position = camera.get_position();
+        spot_lights[2].direction = camera.get_direction();
     }
+
+    spot_lights[0].direction.y = reflectors_angle;
+    spot_lights[0].outer_cutoff = glm::cos(glm::radians(reflectors_spread));
+    spot_lights[1].direction.y = reflectors_angle;
+    spot_lights[1].outer_cutoff = glm::cos(glm::radians(reflectors_spread));
 }
 
 void Scene::draw(PhongShader& shader) const
 {
     glm::mat4 car_model_mat = car->get_model_matrix();
+    glm::mat4 car_rotation_mat = car->get_rotation_matrix();
     glm::vec3 camera_pos = car_model_mat * glm::vec4(camera.get_position(), 1.0);
 
     if(camera_type_id == 1)
@@ -99,8 +106,17 @@ void Scene::draw(PhongShader& shader) const
         shader.set_point_light(i, point_lights[i]);
 
     shader.set_int("numSpotLights", (int) spot_lights.size());
-    for(auto i = 0; i < spot_lights.size(); i++)
+    for(auto i = 2; i < spot_lights.size(); i++)
         shader.set_spot_light(i, spot_lights[i]);
+
+    SpotLight reflector1 = spot_lights[0];
+    reflector1.position = car_model_mat * glm::vec4(reflector1.position, 1.0f);
+    reflector1.direction = car_rotation_mat * glm::vec4(reflector1.direction, 1.0f);
+    shader.set_spot_light(0, reflector1);
+    SpotLight reflector2 = spot_lights[1];
+    reflector2.position = car_model_mat * glm::vec4(reflector2.position, 1.0f);
+    reflector2.direction = car_rotation_mat * glm::vec4(reflector2.direction, 1.0f);
+    shader.set_spot_light(1, reflector2);
 
     shader.set_vec4("skyColor", sky_color);
     shader.set_float("fogDensity", fog_density);
@@ -126,6 +142,25 @@ void Scene::setup_scene()
     Model* building2_model = models.emplace_back(std::make_unique<Model>("resources/models/building2/untitled.obj")).get();
     Model* asphalt_model = models.emplace_back(std::make_unique<Model>("resources/models/asphalt/asphalt.obj")).get();
     Model* lamppost_model = models.emplace_back(std::make_unique<Model>("resources/models/lamppost/street lamp.obj")).get();
+
+    spot_lights.emplace_back(
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(1.0f, 1.0f, 1.0f),
+        glm::vec3(1.0f, 1.0f, 1.0f),
+        glm::vec3(30.0f, 10.0f, 60.0f),
+        1.0f, 0.014f, 0.0007f,
+        glm::vec3(0.0f, -0.05f, 1.0f),
+        glm::cos(glm::radians(9.5f)),
+        glm::cos(glm::radians(10.0f)));
+    spot_lights.emplace_back(
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(1.0f, 1.0f, 1.0f),
+        glm::vec3(1.0f, 1.0f, 1.0f),
+        glm::vec3(-30.0f, 10.0f, 60.0f),
+        1.0f, 0.014f, 0.0007f,
+        glm::vec3(0.0f, -0.05f, 1.0f),
+        glm::cos(glm::radians(9.5f)),
+        glm::cos(glm::radians(10.0f)));
 
     directional_lights.emplace_back(
         glm::vec3(0.2f, 0.2f, 0.2f),

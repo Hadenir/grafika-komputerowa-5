@@ -4,6 +4,8 @@ project(grafika_komputerowa_4)
 set(CMAKE_CXX_STANDARD 17)
 
 option(BUILD_SHARED_LIBS "" OFF)
+option(ASSIMP_BUILD_ASSIMP_TOOLS "" OFF)
+option(ASSIMP_BUILD_TESTS "" OFF)
 
 add_subdirectory(lib)
 
