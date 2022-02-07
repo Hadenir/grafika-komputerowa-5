@@ -13,7 +13,7 @@ public:
 
     void update(const Display& display, float delta_time);
 
-    void draw(PhongShader& shader) const;
+    void draw();
 
 private:
     Camera& camera;
@@ -26,6 +26,10 @@ private:
 
     RenderObject* car = nullptr;
 
+    int shader_type = 0;
+    PhongShader phong_shader;
+    PhongShader gouraud_shader;
+
     int camera_type_id = 1;
     float camera_speed = 40;
     glm::vec4 sky_color = glm::vec4 (0.53f, 0.81f, 0.92f, 1.0f);
@@ -35,5 +39,7 @@ private:
     float reflectors_spread = 10.0f;
 
     void setup_scene();
+
+    static std::string read_shader(const std::string& path);
 };
 

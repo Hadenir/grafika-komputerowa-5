@@ -43,7 +43,7 @@ void PhongShader::set_point_light(size_t i, PointLight light)
 
 void PhongShader::set_spot_light(size_t i, SpotLight light)
 {
-    if(i >= 90) throw std::runtime_error("Light index out of range");
+    if(i >= 80) throw std::runtime_error("Light index out of range");
 
     std::string base_name = "spotLights[" + std::to_string(i) + "]";
     set_vec3(base_name + ".ambient", light.ambient);

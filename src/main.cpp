@@ -15,24 +15,9 @@
 #include "object/render_object.hpp"
 #include "object/scene.hpp"
 
-std::string read_shader(const std::string& path)
-{
-    std::ifstream file(path);
-    if(file.fail())
-        throw std::runtime_error("Could not open file!");
-
-    std::stringstream ss;
-    ss << file.rdbuf();
-    return ss.str();
-}
-
 int main()
 {
     Display display("LearnOpenGL", 800, 600);
-
-    std::string vertex_source = read_shader("resources/shaders/phong.vert");
-    std::string fragment_source = read_shader("resources/shaders/phong.frag");
-    PhongShader shader(vertex_source, fragment_source);
 
     Camera camera(glm::vec3(0.0f, 40 * 3.0f, 40 * -5.0f), display.get_width(), display.get_height());
 
@@ -57,8 +42,7 @@ int main()
 
         scene.update(display, delta_time);
 
-        shader.use();
-        scene.draw(shader);
+        scene.draw();
 
         display.end_frame();
     }

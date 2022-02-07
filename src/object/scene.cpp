@@ -1,5 +1,8 @@
 #define GLFW_INCLUDE_NONE
 
+#include <stdexcept>
+#include <fstream>
+#include <sstream>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -7,7 +10,9 @@
 #include "imgui.h"
 
 Scene::Scene(Camera& camera)
-    : camera(camera)
+    : camera(camera),
+      phong_shader(read_shader("resources/shaders/phong.vert"), read_shader("resources/shaders/phong.frag")),
+      gouraud_shader(read_shader("resources/shaders/gouraud.vert"), read_shader("resources/shaders/gouraud.frag"))
 {
     setup_scene();
 }
@@ -20,7 +25,7 @@ void Scene::update(const Display& display, float delta_time)
     {
         camera.set_position({0.0f, 3.0f, 10.0f});
         camera.set_rotation(0.0f, 0.0f);
-        camera_speed = 1.0f;
+        camera_speed = 2.0f;
     }
     if(ImGui::RadioButton("Chase Camera", &camera_type_id, 1))
     {
@@ -34,6 +39,9 @@ void Scene::update(const Display& display, float delta_time)
     ImGui::Text("Reflectors:");
     ImGui::SliderFloat("Reflectors Angle", &reflectors_angle, -0.5f, 0.5f);
     ImGui::SliderFloat("Reflectors Spread", &reflectors_spread, 9.5f, 20.0f);
+    ImGui::Text("Shading:");
+    ImGui::RadioButton("Phong", &shader_type, 0);
+    ImGui::RadioButton("Gouraud", &shader_type, 1);
     ImGui::End();
 
     if(display.get_key(GLFW_KEY_UP))
@@ -78,8 +86,11 @@ void Scene::update(const Display& display, float delta_time)
     spot_lights[1].outer_cutoff = glm::cos(glm::radians(reflectors_spread));
 }
 
-void Scene::draw(PhongShader& shader) const
+void Scene::draw()
 {
+    PhongShader& shader = shader_type == 0 ? phong_shader : gouraud_shader;
+    shader.use();
+
     glm::mat4 car_model_mat = car->get_model_matrix();
     glm::mat4 car_rotation_mat = car->get_rotation_matrix();
     glm::vec3 camera_pos = car_model_mat * glm::vec4(camera.get_position(), 1.0);
@@ -230,4 +241,15 @@ void Scene::setup_scene()
             }
         }
     }
+}
+
+std::string Scene::read_shader(const std::string& path)
+{
+    std::ifstream file(path);
+    if(file.fail())
+        throw std::runtime_error("Could not open file!");
+
+    std::stringstream ss;
+    ss << file.rdbuf();
+    return ss.str();
 }
