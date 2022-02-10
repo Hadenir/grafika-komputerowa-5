@@ -17,7 +17,7 @@
 
 int main()
 {
-    Display display("LearnOpenGL", 800, 600);
+    Display display("Grafika Komputerowa Konrad Brzozka", 800, 600);
 
     Camera camera(glm::vec3(0.0f, 40 * 3.0f, 40 * -5.0f), display.get_width(), display.get_height());
 
